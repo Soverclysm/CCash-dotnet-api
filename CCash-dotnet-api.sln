@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31410.357
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CCash-dotnet-api", "CCash-dotnet-api\CCash-dotnet-api.csproj", "{D49219CC-E4B5-43FD-BFCA-40DBB38B6350}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D49219CC-E4B5-43FD-BFCA-40DBB38B6350}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D49219CC-E4B5-43FD-BFCA-40DBB38B6350}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D49219CC-E4B5-43FD-BFCA-40DBB38B6350}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D49219CC-E4B5-43FD-BFCA-40DBB38B6350}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {6287B0DC-893A-45AE-BDF9-6CE13B5BDF1A}
+	EndGlobalSection
+EndGlobal
