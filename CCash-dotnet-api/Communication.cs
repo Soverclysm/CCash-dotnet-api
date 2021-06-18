@@ -78,22 +78,53 @@ namespace CCash_dotnet_api {
                 .Replace("{quantity}", quantity), null);
         }
 
+        public async Task BODY_POST(string command, string password, string body_text, string username = "", string username2 = "", string quantity = "") {
+            await input_password(password);
+            string uri = command_tokens[command]
+                .Replace("{name}", username)
+                .Replace("{name2}", username2)
+                .Replace("{quantity}", quantity);
+            HttpRequestMessage http_request_message = new HttpRequestMessage(new HttpMethod("POST"), uri) {
+                Content = new StringContent(body_text, Encoding.UTF8, "application/json")
+            };
+            await http_client.SendAsync(http_request_message);
+        }
+
+        public async Task BODY_POST(string command, string body_text, string username2 = "", string quantity = "") {
+            string uri = command_tokens[command]
+                .Replace("{name}", authentication_details.username)
+                .Replace("{name2}", username2)
+                .Replace("{quantity}", quantity);
+            HttpRequestMessage http_request_message = new HttpRequestMessage(new HttpMethod("POST"), uri) {
+                Content = new StringContent(body_text, Encoding.UTF8, "application/json")
+            };
+            await http_client.SendAsync(http_request_message);
+        }
+
         #endregion
 
         #region PATCH
 
-        public async Task @PATCH(string username, string password, string command, string quantity = "") {
+        public async Task @PATCH(string username, string password, string command, string body_text, string quantity = "") {
             await input_password(password);
-            await http_client.PatchAsync(command_tokens[command]
+            string uri = command_tokens[command]
                 .Replace("{name}", username)
-                .Replace("{quantity}", quantity)
-                , null);
+                .Replace("{quantity}", quantity);
+            HttpRequestMessage http_request_message = new HttpRequestMessage(new HttpMethod("PATCH"), uri) {
+                Content = new StringContent(body_text, Encoding.UTF8, "application/json")
+            };
+            await http_client.SendAsync(http_request_message);
         }
 
-        public async Task @PATCH(string command, string quantity = "") {
-            await http_client.PatchAsync(command_tokens[command]
+
+        public async Task @PATCH(string command, string body_text, string quantity = "") {
+            string uri = command_tokens[command]
                 .Replace("{name}", authentication_details.username)
-                .Replace("{quantity}", quantity), null);
+                .Replace("{quantity}", quantity);
+            HttpRequestMessage http_request_message = new HttpRequestMessage(new HttpMethod("PATCH"), uri) {
+                Content = new StringContent(body_text, Encoding.UTF8, "application/json")
+            };
+            await http_client.SendAsync(http_request_message);
         }
 
         #endregion

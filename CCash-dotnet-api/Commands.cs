@@ -21,7 +21,7 @@ namespace CCash_dotnet_api {
         #region GetBal 
 
         public async Task<string> GetBal(string username) {
-            return await comms.@GET("GetBal", username);
+            return await comms.GET("GetBal", username);
         }
 
         public async Task<string> GetBal() {
@@ -72,30 +72,128 @@ namespace CCash_dotnet_api {
 
         #region ChangePassword
 
-        public async Task ChangePassword(string username, string password) {
-            await comms.PATCH(username, password, "ChangePassword");
+        public async Task ChangePassword(string username, string password, string new_password) {
+            await comms.PATCH(username, password, "ChangePassword", new_password);
         }
 
-        public async Task ChangePassword() {
+        public async Task ChangePassword(string new_password) {
             if (!await @is()) throw new AuthenicationFailureException();
-            await comms.PATCH("ChangePassword");
+            await comms.PATCH("ChangePassword", new_password);
         }
 
         #endregion
 
         #region SetBal
 
-        public async Task SetBal(string username, string password, string quantity) {
-            await comms.PATCH(username, password, "SetBal");
+        public async Task SetBal(string username, string password, string new_balance) {
+            await comms.PATCH(username, password, "SetBal", new_balance);
         }
 
-        public async Task SetBal(string quantity) {
+        public async Task SetBal(string new_balance) {
             if (!await @is()) throw new AuthenicationFailureException();
-            else await comms.PATCH("SetBal", quantity);
+            else await comms.PATCH("SetBal", new_balance);
         }
-
 
         #endregion SetBal
 
+        #region Help
+
+        public async Task<string> Help() {
+            return await comms.GET("Help");
+        }
+
+        #endregion
+
+        #region Ping
+
+        public async Task<string> Ping() {
+            return await comms.GET("Ping");
+        }
+
+        #endregion
+
+        #region Close
+
+        public async Task Close(string password) {
+            await comms.POST("Close", password,"",""); // cry about it
+        }
+
+        public async Task Close() {
+            await comms.POST("Close");
+        }
+
+        #endregion
+
+        #region Contains
+
+        public async Task<string> Contains(string username) {
+            return await comms.GET("Contains", username);
+        }
+
+        public async Task<string> Contains() {
+            return await comms.GET("Contains");
+        }
+
+        #endregion Contains
+
+        #region AdminVerifyPass
+
+        public async Task<string> AdminVerifyPass(string password) {
+            return await comms.GET("", password, "AdminVerifyPass");
+        }
+
+        public async Task<string> AdminVerifyPass() {
+            return await comms.GET("AdminVerifyPass"); 
+        }
+
+        #endregion
+
+        #region AddUser
+
+        public async Task AddUser(string username, string password) {
+            await comms.POST("AddUser", password, username);
+        }
+
+        public async Task AddUser() {
+            await comms.POST("AddUser");
+        }
+
+        #endregion
+
+        #region AdminAddUser
+
+        public async Task AdminAddUser(string username, string password, string init_bal, string new_password) {
+            await comms.BODY_POST("AdminAddUser", password, new_password, quantity: init_bal);
+        }
+
+        public async Task AdminAddUser(string init_bal, string new_password) {
+            await comms.BODY_POST("AdminAddUser", new_password, quantity: init_bal);
+        }
+
+        #endregion
+
+        #region DelUser
+
+        public async Task DelUser(string username, string password) {
+            await comms.DELETE(username, password, "DelUser");
+        }
+
+        public async Task DelUser() {
+            await comms.DELETE("DelUser");
+        }
+
+        #endregion
+
+        #region AdminDelUser
+
+        public async Task AdminDelUser(string username, string password) {
+            await comms.DELETE(username, password, "AdminDelUser");
+        }
+
+        public async Task AdminDelUser() {
+            await comms.DELETE("AdminDelUser");
+        }
+
+        #endregion
     }
 }
