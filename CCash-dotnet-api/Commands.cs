@@ -3,18 +3,83 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Net;
 
 namespace CCash_dotnet_api {
     class Commands {
 
-        public Communication comms = new Communication();
+        private Communication comms = new Communication();
 
-        public async Task CreateAccount(string username, string password) {
-            comms.authentication_details = new Auth(username, password);
-            await comms.flush_details();
+        public void ChangeAccount(string username, string password) {
+            comms.current_user = new User(username, password);
+        }
+        public void ChangeAccount(User user) {
+            comms.current_user = user;
         }
 
-        private async Task<bool> @is() {
+        // returns balance of current_user
+        public async Task<ulong> GetBal() {
+            string response = await comms.SendRequest("GetBal", "GET");
+            await CheckForExceptions(response);
+            return ulong.Parse(response);
+        }
+
+        // returns logs of current_user
+        public async Task<string> GetLog() {
+            string response = await comms.SendRequest("GetLog", "GET");
+            await CheckForExceptions(response);
+            return response;
+        }
+
+        // returns true if funds successfully sent
+        public async Task<bool> SendFunds(string username2, ulong funds_transferred) {
+            string response = await comms.SendRequest("SendFunds", "POST", username2: username2, quantity: funds_transferred.ToString());
+            await CheckForExceptions(response);
+            if (response == "-6") throw new InsufficientFundsException(comms.current_user.username, funds_transferred);
+            return true;
+        }
+
+        // returns 1 if current_user.password is correct
+        public async Task<int> VerifyPassword() {
+            string response = await comms.SendRequest("VerifyPassword", "GET");
+            await CheckForExceptions(response);
+            return int.Parse(response);
+        }
+
+        // returns true if password changed successfully
+        public async Task<bool> ChangePassword(string new_password) {
+            string response = await comms.SendRequest("ChangePassword", "PATCH", body_text: new_password);
+            await CheckForExceptions(response);
+            return true;
+        }
+
+        // returns true if balance changed successfully
+        public async Task<bool> SetBal(ulong new_balance) {
+            string response = await comms.SendRequest("SetBal", "PATCH", quantity: new_balance.ToString());
+            await CheckForExceptions(response);
+            return true;
+        }
+
+        public async Task<string> Help() {
+            return await comms.SendRequest("Help", "GET");
+        }
+
+        public async Task<bool> Ping() {
+            string response = await comms.SendRequest("Ping", "GET");
+            return true;
+        }
+
+        private async Task CheckForExceptions(string response) {
+            switch (response) {
+                case "-1": throw new UserNotFoundException(comms.current_user.username);
+                case "-2": throw new InvalidPasswordException(comms.current_user.password, comms.current_user.username);
+                case "-3": throw new InvalidRequestException();
+                case "-4": throw new NameTooLongException(comms.current_user.username);
+                case "-5": throw new UserAlreadyExistsException(comms.current_user.username);
+            }
+        }
+
+        /*private async Task<bool> @is() {
             return! (comms.authentication_details.username == "");
         }
 
@@ -194,6 +259,6 @@ namespace CCash_dotnet_api {
             await comms.DELETE("AdminDelUser");
         }
 
-        #endregion
+        #endregion*/
     }
 }

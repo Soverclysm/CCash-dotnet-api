@@ -3,14 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.IO;
 using System.Net.Http;
+using System.Net;
 
 namespace CCash_dotnet_api {
     class Communication {
 
         private readonly HttpClient http_client = new HttpClient();
-        public Auth authentication_details = new Auth("","");
-
+        public User current_user = new User("", "");
         public Dictionary<string, string> command_tokens;
 
         public Communication() {
@@ -31,116 +32,32 @@ namespace CCash_dotnet_api {
             return arg;
         }
 
-        private async /* this is not async but if i remove this it breaks, soooo */ Task input_password(string password) {
-            if (!http_client.DefaultRequestHeaders.Contains("Password")) http_client.DefaultRequestHeaders.Add("Password", password);
-            else {
-                http_client.DefaultRequestHeaders.Remove("Password");
-                http_client.DefaultRequestHeaders.Add("Password", password);
-            }
-        }
-
-        public async Task flush_details() {
-            await input_password(authentication_details.password);
-        }
-
-        #region GET
-
-        public async Task<string> @GET(string command, string username = "") {
-            return await http_client.GetStringAsync(command_tokens[command].Replace("{name}", username));
-        }
-
-        public async Task<string> @GET(string username, string password, string command) {
-            await input_password(password);
-            return await http_client.GetStringAsync(command_tokens[command].Replace("{name}", username));
-        }
-
-        public async Task<string> @GET(string command) {
-            return await http_client.GetStringAsync(command_tokens[command]
-                .Replace("{name}", authentication_details.username));
-        }
-
-        #endregion
-
-        #region POST
-
-        public async Task @POST(string command, string password, string username = "", string username2 = "", string quantity = "") {
-            await input_password(password);
-            await http_client.PostAsync(command_tokens[command]
-                .Replace("{name}", username)
-                .Replace("{name2}", username2)
-                .Replace("{quantity}", quantity), null);
-        }
-
-        public async Task @POST(string command, string username2 = "", string quantity = "") {
-            await http_client.PostAsync(command_tokens[command]
-                .Replace("{name}", authentication_details.username)
-                .Replace("{name2}", username2)
-                .Replace("{quantity}", quantity), null);
-        }
-
-        public async Task BODY_POST(string command, string password, string body_text, string username = "", string username2 = "", string quantity = "") {
-            await input_password(password);
+        /*public async Task<string> SendRequest(string command, string request_type, string password="", string username="", string username2="", string quantity="", string body_text="") {
             string uri = command_tokens[command]
                 .Replace("{name}", username)
                 .Replace("{name2}", username2)
                 .Replace("{quantity}", quantity);
-            HttpRequestMessage http_request_message = new HttpRequestMessage(new HttpMethod("POST"), uri) {
-                Content = new StringContent(body_text, Encoding.UTF8, "application/json")
+            HttpRequestMessage request_message = new HttpRequestMessage(new HttpMethod(request_type), uri) {
+                Content = new StringContent(body_text, Encoding.UTF8, "application/json"),
             };
-            await http_client.SendAsync(http_request_message);
-        }
+            request_message.Headers.Add("Password", password);
+            HttpResponseMessage response_message = await http_client.SendAsync(request_message);
+            return await response_message.Content.ReadAsStringAsync();
+        }*/
 
-        public async Task BODY_POST(string command, string body_text, string username2 = "", string quantity = "") {
+        public async Task<string> SendRequest(string command, string request_type, string username2="", string quantity="", string body_text="") {
             string uri = command_tokens[command]
-                .Replace("{name}", authentication_details.username)
+                .Replace("{name}", current_user.username)
                 .Replace("{name2}", username2)
                 .Replace("{quantity}", quantity);
-            HttpRequestMessage http_request_message = new HttpRequestMessage(new HttpMethod("POST"), uri) {
-                Content = new StringContent(body_text, Encoding.UTF8, "application/json")
+            HttpRequestMessage request_message = new HttpRequestMessage(new HttpMethod(request_type), uri) {
+                Content = new StringContent(body_text, Encoding.UTF8, "application/json"),
             };
-            await http_client.SendAsync(http_request_message);
-        }
-
-        #endregion
-
-        #region PATCH
-
-        public async Task @PATCH(string username, string password, string command, string body_text, string quantity = "") {
-            await input_password(password);
-            string uri = command_tokens[command]
-                .Replace("{name}", username)
-                .Replace("{quantity}", quantity);
-            HttpRequestMessage http_request_message = new HttpRequestMessage(new HttpMethod("PATCH"), uri) {
-                Content = new StringContent(body_text, Encoding.UTF8, "application/json")
-            };
-            await http_client.SendAsync(http_request_message);
+            request_message.Headers.Add("Password", current_user.password);
+            HttpResponseMessage response_message = await http_client.SendAsync(request_message);
+            return await response_message.Content.ReadAsStringAsync();
         }
 
 
-        public async Task @PATCH(string command, string body_text, string quantity = "") {
-            string uri = command_tokens[command]
-                .Replace("{name}", authentication_details.username)
-                .Replace("{quantity}", quantity);
-            HttpRequestMessage http_request_message = new HttpRequestMessage(new HttpMethod("PATCH"), uri) {
-                Content = new StringContent(body_text, Encoding.UTF8, "application/json")
-            };
-            await http_client.SendAsync(http_request_message);
-        }
-
-        #endregion
-
-        #region DELETE
-
-        public async Task @DELETE(string username, string password, string command) {
-            await input_password(password);
-            await http_client.DeleteAsync(command_tokens[command].Replace("{name}", username));
-        }
-
-        public async Task @DELETE(string command) {
-            await http_client.DeleteAsync(command_tokens[command]
-                .Replace("{name}", authentication_details.username));
-        }
-
-        #endregion
     }
 }

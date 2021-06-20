@@ -5,10 +5,10 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace CCash_dotnet_api {
-    public struct Auth {
+    public struct User {
         public string username;
         public string password;
-        public Auth(string username, string password) {
+        public User(string username, string password) {
             this.username = username;
             this.password = password;
         }
