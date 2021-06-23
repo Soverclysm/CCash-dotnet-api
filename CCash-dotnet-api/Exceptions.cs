@@ -1,24 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace CCash_dotnet_api {
-    class UserNotFoundException: Exception {
+﻿namespace CCash_dotnet_api {
+    class UserNotFoundException: System.Exception {
         public UserNotFoundException(string name) { }
     }
-    class InvalidPasswordException: Exception {
+    class InvalidPasswordException: System.Exception {
         public InvalidPasswordException(string password, string name = "") { }
     }
-    class InvalidRequestException: Exception { }
-    class NameTooLongException: Exception {
+    class InvalidRequestException: System.Exception { }
+    class NameTooLongException: System.Exception {
         public NameTooLongException(string name) { }
     }
-    class UserAlreadyExistsException: Exception {
+    class UserAlreadyExistsException: System.Exception {
         public UserAlreadyExistsException(string name) { }
     }
-    class InsufficientFundsException: Exception {
+    class InsufficientFundsException: System.Exception {
         public InsufficientFundsException(string name, ulong amount) { }
     }
 }
