@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.Net;
 
 namespace CCash_dotnet_api {
-    class Commands {
+    class Commands {/*
 
         private Communication comms = new Communication();
 
