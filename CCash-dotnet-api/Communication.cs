@@ -3,9 +3,10 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 using System.Net.Http;
+using Newtonsoft.Json;
 
 namespace CCash_dotnet_api {
-    class Communication {
+    /*public class Communication {
 
         private readonly HttpClient http_client = new();
         public User current_user = new();
@@ -42,7 +43,7 @@ namespace CCash_dotnet_api {
             if (!response_message.IsSuccessStatusCode) {
                 switch ((int)response_message.StatusCode) {
                     case -1: throw new UserNotFoundException(current_user.username);
-                    case -2: throw new InvalidPasswordException(current_user.password, current_user.username);
+                    case -2: throw new InvalidPasswordException(current_user.password);
                     case -3: throw new InvalidRequestException();
                     case -4: throw new NameTooLongException(current_user.username);
                     case -5: throw new UserAlreadyExistsException(current_user.username);
@@ -51,5 +52,8 @@ namespace CCash_dotnet_api {
             }
             return true;
         }
+    }*/
+    public abstract class Communication {
+        private HttpClient _http = new();
     }
 }

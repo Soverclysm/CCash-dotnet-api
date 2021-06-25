@@ -3,7 +3,7 @@
         public UserNotFoundException(string name) { }
     }
     class InvalidPasswordException: System.Exception {
-        public InvalidPasswordException(string password, string name = "") { }
+        public InvalidPasswordException(string password) { }
     }
     class InvalidRequestException: System.Exception { }
     class NameTooLongException: System.Exception {
