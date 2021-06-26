@@ -11,26 +11,26 @@ namespace CCash_dotnet_api {
         public ulong Time { get; set; }
         public string To { get; set; }
     }
-    public interface Response {}
-    public class GetBalResponse: Response {
-        public ulong Balance { get; set; }
+    public interface IResponse {}
+    public class GetBalResponse: IResponse {
+        public uint Balance { get; set; }
     }
-    public class GetLogsResponse: Response {
+    public class GetLogsResponse: IResponse {
         public List<Log> Logs { get; set; }
     }
-    public class VerifyPasswordResponse: Response {
-        public bool Verified { get; set; }
+    public class VerifyPasswordResponse: IResponse {
+        public string Verified { get; set; }
     }
-    public class HelpResonse: Response {
+    public class HelpResonse: IResponse {
         public string Content { get; set; }
     }
-    public class PingResponse: Response {
+    public class PingResponse: IResponse {
         public string Content { get; set; }
     }
-    public class ContainsResponse: Response {
-        public bool Contains { get; set; }
+    public class ContainsResponse: IResponse {
+        public string Contains { get; set; }
     }
-    public class AdminVerifyPassResponse: Response {
-        public bool Verified { get; set; }
+    public class AdminVerifyPassResponse: IResponse {
+        public string Verified { get; set; }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
@@ -6,54 +7,62 @@ using System.Net.Http;
 using Newtonsoft.Json;
 
 namespace CCash_dotnet_api {
-    /*public class Communication {
+    public class Communication: Tokens {
 
-        private readonly HttpClient http_client = new();
-        public User current_user = new();
-        public Dictionary<string, string> tokens_dictionary = new();
-        public string connected_webserver = "https://wtfisthis.tech/BankF/";
+        private HttpClient _http = new();
+        private User _user;
+        private string _auth;
 
-        // this is cancer, how to improve?
-        public string info_directory = Directory.GetParent(Directory.GetParent(Directory.GetParent(
-            Directory.GetCurrentDirectory()).ToString()).ToString()).ToString() + @"\dictionary_population.txt";
+        public string ConnectedWebserver { get; set; }
 
-        public Communication() {
-            foreach (string s in File.ReadAllLines(info_directory)) {
-                tokens_dictionary.Add(s.Substring(0, s.IndexOf(':')), s[(s.IndexOf(':') + 1)..]);
-            }
+        public Communication(string webServer, string username, string password): base() {
+            ConnectedWebserver = webServer;
+            _user = new User(username, password);
+            _auth = Convert.ToBase64String(Encoding.UTF8.GetBytes($"{username}:{password}"));
+            _http.DefaultRequestHeaders.Add("Content-Type", "application/json");
+            _http.DefaultRequestHeaders.Add("Accept", "application/json");
+            _http.DefaultRequestHeaders.Add("Authorization", _auth);
         }
 
-        public async Task<string> SendRequest(string command, string receiver="", ulong _quantity=0, string body_text="") {
-            string quantity = _quantity.ToString();
-            string request_type = tokens_dictionary[command.ToUpper()];
-            string uri = tokens_dictionary[command]
-                .Replace("{name}", current_user.username)
-                .Replace("{name2}", receiver)
-                .Replace("{quantity}", quantity);
-            HttpRequestMessage request_message = new HttpRequestMessage(new HttpMethod(request_type), uri) {
-                Content = new StringContent(body_text, Encoding.UTF8, "application/json"),
+        public async Task<T> SendRequest<T>(string command, string username2="", string quantity="") where T: IResponse {
+            string uri = GetUri(ConnectedWebserver, command);
+            HttpRequestMessage requestMessage = new HttpRequestMessage(new HttpMethod(TokensDictionary[command.ToUpper()]), uri);
+            HttpResponseMessage responseMessage = await _http.SendAsync(requestMessage);
+            CheckForSuccess(responseMessage, quantity);
+            var json = responseMessage.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<T>(json.Result);
+        }
+
+        public async Task<T> SendRequest<T>(string command, string bodyText, string username2 = "", string quantity = "") where T: IResponse {
+            string uri = GetUri(ConnectedWebserver, command);
+            HttpRequestMessage requestMessage = new HttpRequestMessage(new HttpMethod(TokensDictionary[command.ToUpper()]), uri) {
+                Content = new StringContent(bodyText, Encoding.UTF8, "application/json")
             };
-            request_message.Headers.Add("Password", current_user.password);
-            HttpResponseMessage response_message = await http_client.SendAsync(request_message);
-            CheckForSuccess(response_message, _quantity);
-            return await response_message.Content.ReadAsStringAsync();
+            HttpResponseMessage responseMessage = await _http.SendAsync(requestMessage);
+            CheckForSuccess(responseMessage, quantity);
+            var json = responseMessage.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<T>(json.Result);
         }
 
-        private bool CheckForSuccess(HttpResponseMessage response_message, ulong quantity) {
+        private string GetUri(string webServer, string commandName, string username = "", string username2 = "", string quantity = "") {
+            string extendedLink = TokensDictionary[commandName]
+                .Replace("{name}", username)
+                .Replace("{name2}", username2)
+                .Replace("quantity", quantity);
+            return $"{webServer}{extendedLink}";
+        }
+
+        private void CheckForSuccess(HttpResponseMessage response_message, string quantity) {
             if (!response_message.IsSuccessStatusCode) {
                 switch ((int)response_message.StatusCode) {
-                    case -1: throw new UserNotFoundException(current_user.username);
-                    case -2: throw new InvalidPasswordException(current_user.password);
+                    case -1: throw new UserNotFoundException(_user.username);
+                    case -2: throw new InvalidPasswordException(_user.password);
                     case -3: throw new InvalidRequestException();
-                    case -4: throw new NameTooLongException(current_user.username);
-                    case -5: throw new UserAlreadyExistsException(current_user.username);
-                    case -6: throw new InsufficientFundsException(current_user.username, quantity);
+                    case -4: throw new NameTooLongException(_user.username);
+                    case -5: throw new UserAlreadyExistsException(_user.username);
+                    case -6: throw new InsufficientFundsException(_user.username, quantity);
                 }
             }
-            return true;
         }
-    }*/
-    public abstract class Communication {
-        private HttpClient _http = new();
     }
 }
